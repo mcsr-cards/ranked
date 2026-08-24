@@ -1,0 +1,60 @@
+{
+  "name": "@mcsr-cards/ranked",
+  "version": "0.1.0",
+  "description": "Typed client for the MCSR Ranked API, with caching and rate limiting",
+  "keywords": [
+    "mcsr",
+    "mcsrranked",
+    "minecraft",
+    "speedrun",
+    "api",
+    "client",
+    "typescript"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcsr-cards/ranked.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "update-spec": "node scripts/update-spec.mjs",
+    "generate": "openapi-typescript openapi.yaml -o src/schema.d.ts",
+    "build": "tsup",
+    "prepare": "tsup"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.10",
+    "@types/node": "^22",
+    "openapi-typescript": "^7.9.1",
+    "tsup": "^8.5.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  }
+}
