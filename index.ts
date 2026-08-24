@@ -17,18 +17,19 @@ export { MemoryCache, RateLimitError, RateLimiter };
 
 const BASE_URL = 'https://api.mcsrranked.com';
 
-export class McsrRankedError extends Error {
+export class MCSRRankedError extends Error {
   constructor(
     readonly status: number,
     message: string,
     readonly data: unknown = null,
   ) {
     super(message);
-    this.name = 'McsrRankedError';
+    this.name = 'MCSRRankedError';
   }
 }
 
-// every failure is a 400 (redlime why have you forsaken me), and data is either {error} or {params: {field: [msg]}}
+// every failure is a 400 (redlime why have you forsaken me)
+// data is either {error} or {params: {field: [msg]}}
 function errorMessage(data: unknown, fallback: string): string {
   if (typeof data === 'string') return data;
   if (data && typeof data === 'object') {
@@ -60,6 +61,19 @@ function defaultTtl(baseUrl: string): TtlConfig {
   return { user: ms, matches: ms, leaderboard: ms };
 }
 
+function clone<T>(value: T): T {
+  return typeof value === 'object' && value !== null ? (structuredClone(value) as T) : value;
+}
+
+function mergeTtl(base: TtlConfig, overrides: Partial<TtlConfig> = {}): TtlConfig {
+  const merged = { ...base };
+  for (const key of Object.keys(merged) as (keyof TtlConfig)[]) {
+    const value = overrides[key];
+    if (value !== undefined) merged[key] = value;
+  }
+  return merged;
+}
+
 export interface ClientOptions {
   apiKey?: string;
   baseUrl?: string;
@@ -68,7 +82,7 @@ export interface ClientOptions {
   ttl?: Partial<TtlConfig>;
 }
 
-export class McsrRankedClient {
+export class MCSRRankedClient {
   private readonly baseUrl: string;
   private readonly headers: Record<string, string>;
   private readonly cache: CacheStore;
@@ -77,11 +91,11 @@ export class McsrRankedClient {
   private readonly inflight = new Map<string, Promise<unknown>>();
 
   constructor(options: ClientOptions = {}) {
-    this.baseUrl = options.baseUrl ?? BASE_URL;
+    this.baseUrl = (options.baseUrl ?? BASE_URL).replace(/\/+$/, '');
     this.headers = options.apiKey ? { 'Private-Key': options.apiKey } : {};
     this.cache = options.cache ?? new MemoryCache();
     this.limiter = options.limiter ?? new RateLimiter();
-    this.ttl = { ...defaultTtl(this.baseUrl), ...options.ttl };
+    this.ttl = mergeTtl(defaultTtl(this.baseUrl), options.ttl);
   }
 
   remaining(): number {
@@ -109,11 +123,11 @@ export class McsrRankedClient {
     const key = url.toString();
 
     const existing = this.inflight.get(key);
-    if (existing) return existing as Promise<T>;
+    if (existing) return (existing as Promise<T>).then(clone);
 
     const pending = this.load<T>(key, ttlMs).finally(() => this.inflight.delete(key));
     this.inflight.set(key, pending);
-    return pending;
+    return pending.then(clone);
   }
 
   private async load<T>(url: string, ttlMs: number): Promise<T> {
@@ -134,7 +148,7 @@ export class McsrRankedClient {
 
     if (!res.ok || body?.status !== 'success') {
       const detail = errorMessage(body?.data, res.statusText);
-      throw new McsrRankedError(res.status, detail || 'request failed', body?.data ?? null);
+      throw new MCSRRankedError(res.status, detail || 'request failed', body?.data ?? null);
     }
 
     if (ttlMs > 0) {
@@ -147,5 +161,5 @@ export class McsrRankedClient {
 }
 
 export function createClient(options?: ClientOptions) {
-  return new McsrRankedClient(options);
+  return new MCSRRankedClient(options);
 }

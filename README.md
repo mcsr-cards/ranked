@@ -72,7 +72,7 @@ through.
 
 ## Errors
 
-Failures throw `McsrRankedError` with `status`, `message` and the raw `data`.
+Failures throw `MCSRRankedError` with `status`, `message` and the raw `data`.
 
 Be aware the API answers 400 for everything for some reason, so an unknown user
 and a malformed request has to be distinguished like this:
@@ -81,7 +81,7 @@ and a malformed request has to be distinguished like this:
 try {
   await mcsr.getUser('discord.123');
 } catch (err) {
-  if (err instanceof McsrRankedError && err.message === 'User is not exists.') {
+  if (err instanceof MCSRRankedError && err.message === 'User is not exists.') {
     // no linked account
   }
 }
