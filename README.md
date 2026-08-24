@@ -63,7 +63,17 @@ Pass your own store to cache somewhere other than memory, useful for workers or
 whatever:
 
 ```ts
-createClient({ cache: myRedisBackedStore });   // see src/cache.ts
+createClient({ cache: myRedisBackedStore });
+```
+
+Any object with this shape works, and `CacheStore` is exported if you want to implement
+it explicitly:
+
+```ts
+interface CacheStore {
+  get(key: string): unknown | Promise<unknown>;
+  set(key: string, value: unknown, ttlMs: number): void | Promise<void>;
+}
 ```
 
 `get` and `set` may return promises, so a Redis or KV backed store works as-is. If the

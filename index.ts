@@ -28,19 +28,25 @@ export class MCSRRankedError extends Error {
   }
 }
 
+function stringLeaves(value: unknown, depth = 4): string[] {
+  if (depth < 0) return [];
+  if (typeof value === 'string') return [value];
+  if (Array.isArray(value)) return value.flatMap((entry) => stringLeaves(entry, depth - 1));
+  if (value && typeof value === 'object') {
+    return Object.values(value).flatMap((entry) => stringLeaves(entry, depth - 1));
+  }
+  return [];
+}
+
 // every failure is a 400 (redlime why have you forsaken me)
 // data is either {error} or {params: {field: [msg]}}
 function errorMessage(data: unknown, fallback: string): string {
   if (typeof data === 'string') return data;
   if (data && typeof data === 'object') {
-    const shape = data as { error?: unknown; params?: Record<string, unknown> };
+    const shape = data as { error?: unknown };
     if (typeof shape.error === 'string') return shape.error;
-    if (shape.params && typeof shape.params === 'object') {
-      const messages = Object.values(shape.params)
-        .flat()
-        .filter((value): value is string => typeof value === 'string');
-      if (messages.length) return messages.join(', ');
-    }
+    const messages = stringLeaves(data);
+    if (messages.length) return messages.join(', ');
   }
   return fallback;
 }
