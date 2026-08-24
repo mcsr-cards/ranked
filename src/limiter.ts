@@ -9,7 +9,7 @@ export class RateLimiter {
   private hits: number[] = [];
 
   constructor(
-    readonly limit = 3000,
+    readonly limit = 500,
     readonly windowMs = 600_000,
   ) {}
 

@@ -31,6 +31,20 @@ Profile, Settings, Generate & Copy API Private Key.
 
 You can also request a private API key for larger projects with higher rate limits on the Discord server, as of June 2026 that limit is 3000 requests per 10 minutes by default.
 
+## Rate limiting
+
+Requests are counted against a 10 minute window and `RateLimitError` is thrown
+locally once the budget is gone, so you find out before the API starts rate limiting.
+The budget is always the public limit of 500 requests per 10 minutes, even when you pass
+an `apiKey`. **Raising rate limits is manual,** so for a regular private key it looks
+something like this:
+
+```ts
+createClient({ apiKey, limiter: new RateLimiter(3000, 600_000) });
+```
+
+`mcsr.remaining()` shows how many requests are left in that window.
+
 ## Caching
 
 Responses are cached in memory per URL, 5 seconds on `api.mcsrranked.com` and
@@ -51,6 +65,10 @@ whatever:
 ```ts
 createClient({ cache: myRedisBackedStore });   // see src/cache.ts
 ```
+
+`get` and `set` may return promises, so a Redis or KV backed store works as-is. If the
+store throws, a read is treated as a miss and a write is dropped, the request still goes
+through.
 
 ## Errors
 

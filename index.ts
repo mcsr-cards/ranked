@@ -108,18 +108,22 @@ export class McsrRankedClient {
     }
     const key = url.toString();
 
-    if (ttlMs > 0) {
-      const hit = this.cache.get(key);
-      if (hit !== undefined) return Promise.resolve(hit as T);
-    }
-
-    // concurrent callers share one request instead of spending two on the same answer
     const existing = this.inflight.get(key);
     if (existing) return existing as Promise<T>;
 
-    const pending = this.fetchJson<T>(key, ttlMs).finally(() => this.inflight.delete(key));
+    const pending = this.load<T>(key, ttlMs).finally(() => this.inflight.delete(key));
     this.inflight.set(key, pending);
     return pending;
+  }
+
+  private async load<T>(url: string, ttlMs: number): Promise<T> {
+    if (ttlMs > 0) {
+      try {
+        const hit = await this.cache.get(url);
+        if (hit !== undefined) return hit as T;
+      } catch {}
+    }
+    return this.fetchJson<T>(url, ttlMs);
   }
 
   private async fetchJson<T>(url: string, ttlMs: number): Promise<T> {
@@ -133,7 +137,11 @@ export class McsrRankedClient {
       throw new McsrRankedError(res.status, detail || 'request failed', body?.data ?? null);
     }
 
-    if (ttlMs > 0) this.cache.set(url, body.data, ttlMs);
+    if (ttlMs > 0) {
+      try {
+        await this.cache.set(url, body.data, ttlMs);
+      } catch {}
+    }
     return body.data as T;
   }
 }

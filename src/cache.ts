@@ -1,6 +1,6 @@
 export interface CacheStore {
-  get(key: string): unknown;
-  set(key: string, value: unknown, ttlMs: number): void;
+  get(key: string): unknown | Promise<unknown>;
+  set(key: string, value: unknown, ttlMs: number): void | Promise<void>;
 }
 
 export class MemoryCache implements CacheStore {
