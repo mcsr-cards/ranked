@@ -13,11 +13,11 @@ Requires Node 18+ (uses global `fetch`).
 ```ts
 import { createClient } from '@mcsr-cards/ranked';
 
-const mcsr = createClient({ apiKey: process.env.MCSR_RANKED_API_KEY });
+const ranked = createClient({ apiKey: process.env.MCSR_RANKED_API_KEY });
 
-const user = await mcsr.getUser('feinberg');
-const matches = await mcsr.getUserMatches(user.uuid, { type: 2, count: 50 });
-const leaderboard = await mcsr.getLeaderboard();
+const user = await ranked.getUser('feinberg');
+const matches = await ranked.getUserMatches(user.uuid, { type: 2, count: 50 });
+const leaderboard = await ranked.getLeaderboard();
 ```
 
 An identifier is a UUID, a nickname, or `discord.{id}`:
@@ -107,7 +107,7 @@ and a malformed request has to be distinguished like this:
 
 ```ts
 try {
-  await mcsr.getUser('discord.123');
+  await ranked.getUser('discord.123');
 } catch (err) {
   if (err instanceof MCSRRankedError && err.message === 'User is not exists.') {
     // no linked account
