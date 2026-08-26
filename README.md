@@ -80,6 +80,24 @@ interface CacheStore {
 store throws, a read is treated as a miss and a write is dropped, the request still goes
 through.
 
+## Timeouts and retries
+
+Requests are aborted after 10 seconds by default, and `MCSRRankedTimeoutError` is thrown.
+Set `timeoutMs: 0` to disable.
+
+Network errors and 5xx responses are retried twice with exponential backoff (250ms, 500ms).
+4xx responses and `RateLimitError` are never retried. Set `retries: 0` to disable.
+
+```ts
+createClient({ timeoutMs: 5_000, retries: 0 });
+```
+
+## Validation
+
+Responses are validated against the API's own OpenAPI schema (via [ajv](https://ajv.js.org))
+before being returned, corrupted or unexpected fields throw `MCSRRankedValidationError`
+Set `validate: false` to disable.
+
 ## Errors
 
 Failures throw `MCSRRankedError` with `status`, `message` and the raw `data`.
@@ -99,11 +117,12 @@ try {
 
 ## Types
 
-`src/schema.d.ts` is generated from a vendored copy of the spec:
+`src/schema.d.ts` (types) and `src/schemas.ts` (validation schemas) are both generated
+from the spec:
 
 ```
 bun run update-spec   # pull the latest openapi.yaml
-bun run generate      # regenerate types
+bun run generate      # regenerate src/schema.d.ts and src/schemas.ts
 ```
 
 The upstream spec is maintained by hand and has shipped incorrect types before,

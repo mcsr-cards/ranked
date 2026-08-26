@@ -1,6 +1,6 @@
 {
   "name": "@mcsr-cards/ranked",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Typed client for the MCSR Ranked API, with caching and rate limiting",
   "keywords": [
     "mcsr",
@@ -44,13 +44,14 @@
   },
   "scripts": {
     "update-spec": "node scripts/update-spec.mjs",
-    "generate": "openapi-typescript openapi.yaml -o src/schema.d.ts",
+    "generate": "openapi-typescript openapi.yaml -o src/schema.d.ts && node scripts/generate-schemas.mjs",
     "build": "tsup",
     "prepare": "tsup"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.10",
     "@types/node": "^22",
+    "js-yaml": "^4.3.2",
     "openapi-typescript": "^7.9.1",
     "tsup": "^8.5.0"
   },
@@ -61,5 +62,8 @@
     "typescript": {
       "optional": true
     }
+  },
+  "dependencies": {
+    "ajv": "^8.20.0"
   }
 }
