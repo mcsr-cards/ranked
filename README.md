@@ -23,7 +23,7 @@ const leaderboard = await ranked.getLeaderboard();
 An identifier is a UUID, a nickname, or `discord.{id}`:
 
 ```ts
-await mcsr.getUser('discord.843230753734918154');
+await ranked.getUser('discord.843230753734918154');
 ```
 
 The API key is optional but raises your rate limit. Generate one in game under
@@ -102,18 +102,28 @@ Set `validate: false` to disable.
 
 Failures throw `MCSRRankedError` with `status`, `message` and the raw `data`.
 
-Be aware the API answers 400 for everything for some reason, so an unknown user
-and a malformed request has to be distinguished like this:
+Be aware the API answers 400 for everything for some reason, so an unknown user and a
+malformed request can only be told apart by the message. `isMissingUser` does that for you:
 
 ```ts
+import { isMissingUser } from '@mcsr-cards/ranked';
+
 try {
   await ranked.getUser('discord.123');
 } catch (err) {
-  if (err instanceof MCSRRankedError && err.message === 'User is not exists.') {
+  if (isMissingUser(err)) {
     // no linked account
   }
+  throw err;
 }
 ```
+
+## Cursors
+
+`after` and `before` take a match ID, and the API rejects anything below 1 with
+`Too small: expected number to be >=1`. The spec gives them no minimum, only `count` has
+one, so this is a server rule you cannot see in the types. Use `after: 1` when you mean
+"everything", not 0
 
 ## Types
 
@@ -121,8 +131,8 @@ try {
 from the spec:
 
 ```
-bun run update-spec   # pull the latest openapi.yaml
-bun run generate      # regenerate src/schema.d.ts and src/schemas.ts
+npm run update-spec   # pull the latest openapi.yaml
+npm run generate      # regenerate src/schema.d.ts and src/schemas.ts
 ```
 
 The upstream spec is maintained by hand and has shipped incorrect types before,

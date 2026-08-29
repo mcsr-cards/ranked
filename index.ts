@@ -46,6 +46,10 @@ export class MCSRRankedValidationError extends Error {
   }
 }
 
+export function isMissingUser(err: unknown): boolean {
+  return err instanceof MCSRRankedError && /not exist/i.test(err.message);
+}
+
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
