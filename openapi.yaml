@@ -880,7 +880,9 @@ components:
         - phasePoint
       properties:
         eloRate:
-          type: integer
+          type:
+            - integer
+            - 'null'
         eloRank:
           type:
             - integer
@@ -914,9 +916,13 @@ components:
         last:
           $ref: '#/components/schemas/SeasonStanding'
         highest:
-          type: integer
+          type:
+            - integer
+            - 'null'
         lowest:
-          type: integer
+          type:
+            - integer
+            - 'null'
         phases:
           type: array
           items:

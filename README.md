@@ -138,6 +138,20 @@ npm run generate      # regenerate src/schema.d.ts and src/schemas.ts
 The upstream spec is maintained by hand and has shipped incorrect types before,
 so please review the updated spec before generating. (im gonna forget)
 
+`openapi.yaml` carries local patches on top of upstream. right now that's three fields
+typed as plain integers that the api returns null for once a season rolls over and nobody
+has placed yet:
+
+- `SeasonStanding.eloRate`
+- `SeasonResultDetailed.highest`
+- `SeasonResultDetailed.lowest`
+
+`update-spec` overwrites the file wholesale, so it checks for these afterwards and tells
+you which ones to re-apply. the list lives in `LOCAL_PATCHES` in `scripts/update-spec.mjs`,
+delete an entry once upstream takes it.
+
+`src/schema.d.ts` gets biome formatted after generating, `src/schemas.ts` does not.
+
 I'm an idiot. Please validate anything you depend on.
 
 ## License

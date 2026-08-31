@@ -551,7 +551,10 @@ export const schemaDefs: Record<string, object> = {
     ],
     "properties": {
       "eloRate": {
-        "type": "integer"
+        "type": [
+          "integer",
+          "null"
+        ]
       },
       "eloRank": {
         "type": [
@@ -600,10 +603,16 @@ export const schemaDefs: Record<string, object> = {
         "$ref": "#/$defs/SeasonStanding"
       },
       "highest": {
-        "type": "integer"
+        "type": [
+          "integer",
+          "null"
+        ]
       },
       "lowest": {
-        "type": "integer"
+        "type": [
+          "integer",
+          "null"
+        ]
       },
       "phases": {
         "type": "array",

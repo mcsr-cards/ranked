@@ -1,6 +1,6 @@
 {
   "name": "@mcsr-cards/ranked",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Typed client for the MCSR Ranked API, with caching and rate limiting",
   "keywords": [
     "mcsr",

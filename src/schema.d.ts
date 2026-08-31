@@ -406,7 +406,7 @@ export interface components {
       name: string;
     };
     SeasonStanding: {
-      eloRate: number;
+      eloRate: number | null;
       eloRank: number | null;
       phasePoint: number;
     };
@@ -418,8 +418,8 @@ export interface components {
     };
     SeasonResultDetailed: {
       last: components['schemas']['SeasonStanding'];
-      highest: number;
-      lowest: number;
+      highest: number | null;
+      lowest: number | null;
       phases: components['schemas']['SeasonPhaseResult'][];
     };
     WeeklyRaceResult: {
