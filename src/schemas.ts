@@ -568,27 +568,62 @@ export const schemaDefs: Record<string, object> = {
     }
   },
   "SeasonPhaseResult": {
-    "type": "object",
-    "required": [
-      "phase",
-      "eloRate",
-      "eloRank",
-      "point"
-    ],
-    "properties": {
-      "phase": {
-        "type": "integer"
+    "oneOf": [
+      {
+        "type": "object",
+        "required": [
+          "type",
+          "phase",
+          "eloRate",
+          "eloRank",
+          "point"
+        ],
+        "properties": {
+          "type": {
+            "const": "eloRate"
+          },
+          "phase": {
+            "type": "integer"
+          },
+          "eloRate": {
+            "type": "integer"
+          },
+          "eloRank": {
+            "type": "integer"
+          },
+          "point": {
+            "type": "integer"
+          }
+        }
       },
-      "eloRate": {
-        "type": "integer"
-      },
-      "eloRank": {
-        "type": "integer"
-      },
-      "point": {
-        "type": "integer"
+      {
+        "type": "object",
+        "required": [
+          "type",
+          "phase",
+          "highestRate",
+          "highestRank",
+          "point"
+        ],
+        "properties": {
+          "type": {
+            "const": "highest"
+          },
+          "phase": {
+            "type": "integer"
+          },
+          "highestRate": {
+            "type": "integer"
+          },
+          "highestRank": {
+            "type": "integer"
+          },
+          "point": {
+            "type": "integer"
+          }
+        }
       }
-    }
+    ]
   },
   "SeasonResultDetailed": {
     "type": "object",
