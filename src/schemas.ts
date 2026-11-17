@@ -530,7 +530,6 @@ export const schemaDefs: Record<string, object> = {
   "UserConnection": {
     "type": "object",
     "required": [
-      "id",
       "name"
     ],
     "properties": {

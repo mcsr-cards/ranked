@@ -399,7 +399,7 @@ export interface components {
             [key: string]: components["schemas"]["RankedCasualStat"];
         };
         UserConnection: {
-            id: string;
+            id?: string;
             name: string;
         };
         SeasonStanding: {
